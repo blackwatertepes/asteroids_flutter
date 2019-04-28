@@ -18,8 +18,8 @@ class Asteroids {
 
     asteroids = List<Asteroid>();
     destroyable = List<Asteroid>();
-    spawnRadius = 300;
-    boundRadius = 400;
+    spawnRadius = (sizeWidth + sizeHeight) / 2;
+    boundRadius = spawnRadius + 10;
     directionNoise = 0.8;
     spawnRate = 0.1;
   }
