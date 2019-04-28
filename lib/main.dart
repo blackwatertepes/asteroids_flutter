@@ -9,15 +9,19 @@ void main() => runApp(MyGame().widget);
 
 class MyGame extends BaseGame {
   List<Asteroid> asteroids;
+  List<Asteroid> destroyable;
   double spawnRadius; // Where asteroids spawn
   double boundRadius; // Where asteroids die
   double directionNoise; // How much asteroids stray from center
+  double spawnRate; // How quickly new asteroids spawn
 
   MyGame() {
     asteroids = List<Asteroid>();
+    destroyable = List<Asteroid>();
     spawnRadius = 300;
     boundRadius = 400;
-    directionNoise = 1.0;
+    directionNoise = 0.8;
+    spawnRate = 0.1;
   }
 
   @override
@@ -32,7 +36,7 @@ class MyGame extends BaseGame {
   @override
   void update(double t) {
     Random rand = Random();
-    if (rand.nextDouble() < 0.1) {
+    if (rand.nextDouble() < spawnRate) {
       double location = rand.nextDouble() * pi * 2;
       double x = size.width / 2 + cos(location) * spawnRadius;
       double y = size.height / 2 + sin(location) * spawnRadius;
@@ -44,6 +48,23 @@ class MyGame extends BaseGame {
 
     asteroids.forEach((Asteroid asteroid) => asteroid.update(t));
     asteroids.removeWhere((Asteroid asteroid) => this.offScreen(asteroid));
+
+    // Collision detection...
+    asteroids.forEach((Asteroid asteroid) => this.hasCollidedWithMany(asteroid, asteroids));
+    destroyable.forEach((Asteroid asteroid) => asteroids.remove(asteroid));
+    destroyable.clear();
+  }
+
+  void hasCollidedWithMany(Asteroid object_a, List<Asteroid> objects) {
+    objects.forEach((Asteroid object_b) => this.hasCollided(object_a, object_b));
+  }
+
+  void hasCollided(Asteroid object_a, Asteroid object_b) {
+    double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
+    if (object_a != object_b && distBetween < object_a.size + object_b.size) {
+      destroyable.add(object_a);
+      destroyable.add(object_b);
+    }
   }
 
   bool offScreen(PositionComponent object) {
