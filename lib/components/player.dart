@@ -19,14 +19,13 @@ class Player  {
 
   @override
   void render(Canvas canvas) {
+    double tri = pi * 2 / 3;
     Path path = Path()
-      ..moveTo(x - size, y - size)
-      ..lineTo(x, y - size / 2)
-      ..lineTo(x + size, y - size)
-      ..lineTo(x, y + size)
-      ..lineTo(x - size, y - size);
-
-    // Transform.rotate(angle: angle, child: path);
+      ..moveTo(x + cos(angle) * size, y + sin(angle) * size)
+      ..lineTo(x + cos(tri + angle) * size, y + sin(tri + angle) * size)
+      ..lineTo(x + cos(tri * 1.5 + angle) * size / 4, y + sin(tri * 1.5 + angle) * size / 4)
+      ..lineTo(x + cos(tri * 2 + angle) * size, y + sin(tri * 2 + angle) * size)
+      ..lineTo(x + cos(angle) * size, y + sin(angle) * size);
 
     boxPaint = Paint();
     boxPaint.color = Color(0xffffffff);
@@ -41,6 +40,6 @@ class Player  {
   }
 
   void fireAt(double at_x, double at_y) {
-    angle = atan2(y - at_y, x - at_x);
+    angle = atan2(at_y - y, at_x - x);
   }
 }
