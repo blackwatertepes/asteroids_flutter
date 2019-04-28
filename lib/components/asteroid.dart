@@ -41,7 +41,6 @@ class Asteroid extends PositionComponent {
       randVertices.add(rand.nextDouble() * noiseMulti * 2 - noiseMulti);
     }
 
-    // direction = rand.nextDouble() * pi * 2;
     size = rand.nextDouble() * (maxSize - minSize) + minSize;
     angle = rand.nextDouble() * pi * 2;
     rotationSpeed = rand.nextDouble() * maxRotationSpeed * 2 - maxRotationSpeed;
