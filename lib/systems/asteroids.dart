@@ -56,10 +56,13 @@ class Asteroids {
   }
 
   void hasCollided(Asteroid object_a, Asteroid object_b) {
-    double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
-    if (object_a != object_b && distBetween < object_a.size + object_b.size) {
-      destroyable.add(object_a);
-      destroyable.add(object_b);
+    double distToHit = object_a.size + object_b.size;
+    if (object_a.x - object_b.x < distToHit && object_a.y - object_b.y < distToHit) {
+      double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
+      if (object_a != object_b && distBetween < distToHit) {
+        destroyable.add(object_a);
+        destroyable.add(object_b);
+      }
     }
   }
 
