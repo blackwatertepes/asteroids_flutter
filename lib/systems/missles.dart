@@ -63,7 +63,7 @@ class Missles {
     if (explosion.x - asteroid.x < explosion.blastRadius + asteroid.size && explosion.y - asteroid.y < explosion.blastRadius + asteroid.size) {
       double distBetween = sqrt(pow(explosion.x - asteroid.x, 2) + pow(explosion.y - asteroid.y, 2));
       if (distBetween < explosion.blastRadius + asteroid.size) {
-        asteroid.destroy();
+        asteroid.hit(1);
       }
     }
   }
