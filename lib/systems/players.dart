@@ -8,15 +8,15 @@ class Players {
   List<Player> players;
   double x;
   double y;
+  Function endGame;
 
-  Players(double init_x, double init_y, List<Asteroid> init_asteroids) {
+  Players(double init_x, double init_y, List<Asteroid> init_asteroids, Function end_game) {
     x = init_x;
     y = init_y;
+    endGame = end_game;
 
     players = List<Player>();
     asteroids = init_asteroids;
-
-    addPlayer(x, y);
   }
 
   @override
@@ -33,7 +33,7 @@ class Players {
     players.forEach((Player player) => this.hasCollidedWithMany(player, asteroids));
   }
 
-  void addPlayer(double dx, double dy) {
+  void addPlayer() {
     Player player = new Player(x, y);
     players.add(player);
   }
@@ -52,6 +52,7 @@ class Players {
       double distBetween = sqrt(pow(player.x - asteroid.x, 2) + pow(player.y - asteroid.y, 2));
       if (distBetween < player.size + asteroid.size) {
         player.destroy();
+        endGame();
       }
     }
   }

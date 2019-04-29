@@ -35,7 +35,7 @@ class MyGame extends BaseGame {
     bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     explosions =  new Explosions(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
-    players = new Players(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
+    players = new Players(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, this.endGame);
     time = new Time(screenSize.width, screenSize.height);
     tapper = TapGestureRecognizer();
     flameUtil = Util();
@@ -68,11 +68,22 @@ class MyGame extends BaseGame {
     screenSize = size;
   }
 
+  void startGame() {
+    players.addPlayer();
+    time.reset();
+  }
+
+  void endGame() {
+    time.stop();
+  }
+
   void onTapDown(TapDownDetails d) {
     bool fired = players.fireAt(d.globalPosition.dx, d.globalPosition.dy);
     if (fired) {
       // bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
       missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
+    } else {
+      startGame();
     }
   }
 }
