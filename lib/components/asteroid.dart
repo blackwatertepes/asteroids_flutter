@@ -78,7 +78,7 @@ class Asteroid extends PositionComponent {
   }
 
   void hit(double strength) {
-    size -= strength / 8;
+    size -= strength * 4;
     if (size < minSize) {
       destroy();
     }

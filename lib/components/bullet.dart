@@ -10,6 +10,7 @@ class Bullet extends PositionComponent {
   double direction;
   double size;
   double speed;
+  bool destroyed;
 
   Bullet(double init_x, double init_y, double init_direction, double init_speed) {
     x = init_x;
@@ -17,6 +18,7 @@ class Bullet extends PositionComponent {
     direction = init_direction;
     speed = init_speed;
     size = init_speed * 2;
+    destroyed = false;
   }
 
   @override
@@ -37,5 +39,10 @@ class Bullet extends PositionComponent {
   void update(double t) {
     x += cos(direction) * speed;
     y += sin(direction) * speed;
+  }
+
+  bool destroy() {
+    destroyed = true;
+    return destroyed;
   }
 }

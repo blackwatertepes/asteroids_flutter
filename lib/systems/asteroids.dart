@@ -56,8 +56,8 @@ class Asteroids {
     if (object_a.x - object_b.x < distToHit && object_a.y - object_b.y < distToHit) {
       double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
       if (object_a != object_b && distBetween < distToHit) {
-        object_a.hit(object_b.size * object_b.speed);
-        object_b.hit(object_a.size * object_a.speed);
+        object_a.hit(0.5);
+        object_b.hit(0.5);
         double angle = atan2(object_a.y - object_b.y, object_a.x - object_b.x);
         object_a.direction -= angle;
         object_b.direction -= angle;

@@ -29,6 +29,7 @@ class Bullets {
 
     // Collision detection...
     bullets.forEach((Bullet bullet) => this.hasCollidedWithMany(bullet, asteroids));
+    bullets.removeWhere((Bullet bullet) => bullet.destroyed);
   }
 
   void hasCollidedWithMany(Bullet bullet, List<Asteroid> asteroids) {
@@ -39,7 +40,8 @@ class Bullets {
     if (bullet.x - asteroid.x < asteroid.size && bullet.y - asteroid.y < asteroid.size) {
       double distBetween = sqrt(pow(bullet.x - asteroid.x, 2) + pow(bullet.y - asteroid.y, 2));
       if (distBetween < asteroid.size) {
-        asteroid.destroy();
+        bullet.destroy();
+        asteroid.hit(0.4);
       }
     }
   }

@@ -64,7 +64,7 @@ class MyGame extends BaseGame {
 
   void onTapDown(TapDownDetails d) {
     player.fireAt(d.globalPosition.dx, d.globalPosition.dy);
-    // bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
-    missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
+    bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
+    // missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
   }
 }
