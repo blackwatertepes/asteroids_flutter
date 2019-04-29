@@ -8,6 +8,7 @@ import 'package:asteroids_flutter/components/player.dart';
 import 'package:asteroids_flutter/components/score.dart';
 import 'package:asteroids_flutter/systems/asteroids.dart';
 import 'package:asteroids_flutter/systems/bullets.dart';
+import 'package:asteroids_flutter/systems/explosions.dart';
 import 'package:asteroids_flutter/systems/missles.dart';
 
 void main() => runApp(MyGame().widget);
@@ -15,6 +16,7 @@ void main() => runApp(MyGame().widget);
 class MyGame extends BaseGame {
   Asteroids asteroids;
   Bullets bullets;
+  Explosions explosions;
   Missles missles;
   Player player;
   Score score;
@@ -31,7 +33,8 @@ class MyGame extends BaseGame {
 
     asteroids = new Asteroids(screenSize.width, screenSize.height);
     bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
-    missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
+    explosions =  new Explosions(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
+    missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
     player = new Player(screenSize.width / 2, screenSize.height / 2);
     score = new Score(screenSize.width, screenSize.height);
     tapper = TapGestureRecognizer();
@@ -45,6 +48,7 @@ class MyGame extends BaseGame {
   void render(Canvas canvas) {
     asteroids.render(canvas);
     bullets.render(canvas);
+    explosions.render(canvas);
     missles.render(canvas);
     player.render(canvas);
     score.render(canvas);
@@ -54,6 +58,7 @@ class MyGame extends BaseGame {
   void update(double t) {
     asteroids.update(t);
     bullets.update(t);
+    explosions.update(t);
     missles.update(t);
     player.update(t);
   }
