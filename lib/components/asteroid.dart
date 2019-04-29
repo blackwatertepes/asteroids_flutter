@@ -20,6 +20,7 @@ class Asteroid extends PositionComponent {
   double maxSpeed;
   double numVertices;
   double noiseMulti;
+  bool destroyed;
 
   Asteroid(double init_x, double init_y, double init_direction) {
     x = init_x;
@@ -34,6 +35,7 @@ class Asteroid extends PositionComponent {
     maxSpeed = 1;
     numVertices = 20;
     noiseMulti = 2;
+    destroyed = false;
 
     Random rand = Random();
 
@@ -79,5 +81,10 @@ class Asteroid extends PositionComponent {
     x += cos(direction) * speed;
     y += sin(direction) * speed;
     angle += rotationSpeed;
+  }
+
+  bool destroy() {
+    destroyed = true;
+    return destroyed;
   }
 }

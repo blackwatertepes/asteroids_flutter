@@ -4,7 +4,6 @@ import 'package:asteroids_flutter/components/asteroid.dart';
 
 class Asteroids {
   List<Asteroid> asteroids;
-  List<Asteroid> destroyable;
   double spawnRadius; // Where asteroids spawn
   double boundRadius; // Where asteroids die
   double directionNoise; // How much asteroids stray from center
@@ -17,7 +16,6 @@ class Asteroids {
     sizeHeight = init_sizeHeight;
 
     asteroids = List<Asteroid>();
-    destroyable = List<Asteroid>();
     spawnRadius = (sizeWidth + sizeHeight) / 2;
     boundRadius = spawnRadius + 10;
     directionNoise = 0.8;
@@ -43,12 +41,10 @@ class Asteroids {
     }
 
     asteroids.forEach((Asteroid asteroid) => asteroid.update(t));
-    asteroids.removeWhere((Asteroid asteroid) => this.offScreen(asteroid));
+    asteroids.removeWhere((Asteroid asteroid) => this.offScreen(asteroid) || asteroid.destroyed);
 
     // Collision detection...
     asteroids.forEach((Asteroid asteroid) => this.hasCollidedWithMany(asteroid, asteroids));
-    destroyable.forEach((Asteroid asteroid) => asteroids.remove(asteroid));
-    destroyable.clear();
   }
 
   void hasCollidedWithMany(Asteroid object_a, List<Asteroid> objects) {
@@ -60,8 +56,8 @@ class Asteroids {
     if (object_a.x - object_b.x < distToHit && object_a.y - object_b.y < distToHit) {
       double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
       if (object_a != object_b && distBetween < distToHit) {
-        destroyable.add(object_a);
-        destroyable.add(object_b);
+        object_a.destroy();
+        object_b.destroy();
       }
     }
   }

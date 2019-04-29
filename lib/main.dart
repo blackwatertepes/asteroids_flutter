@@ -30,7 +30,7 @@ class MyGame extends BaseGame {
     resize(await Flame.util.initialDimensions());
 
     asteroids = new Asteroids(screenSize.width, screenSize.height);
-    bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2);
+    bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     missles =  new Missles(screenSize.width / 2, screenSize.height / 2);
     player = new Player(screenSize.width / 2, screenSize.height / 2);
     score = new Score(screenSize.width, screenSize.height);

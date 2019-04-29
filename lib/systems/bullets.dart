@@ -1,17 +1,20 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:asteroids_flutter/components/asteroid.dart';
 import 'package:asteroids_flutter/components/bullet.dart';
 
 class Bullets {
   List<Bullet> bullets;
+  List<Asteroid> asteroids;
   double x;
   double y;
 
-  Bullets(double init_x, double init_y) {
+  Bullets(double init_x, double init_y, List<Asteroid> init_asteroids) {
     x = init_x;
     y = init_y;
 
     bullets = List<Bullet>();
+    asteroids = init_asteroids;
   }
 
   @override
@@ -25,25 +28,21 @@ class Bullets {
     bullets.removeWhere((Bullet bullet) => this.offScreen(bullet));
 
     // Collision detection...
-    // bullets.forEach((Bullet bullet) => this.hasCollidedWithMany(bullet, asteroids));
-    // destroyable.forEach((Asteroid asteroid) => asteroids.remove(asteroid));
-    // destroyable.clear();
+    bullets.forEach((Bullet bullet) => this.hasCollidedWithMany(bullet, asteroids));
   }
 
-  // void hasCollidedWithMany(Asteroid object_a, List<Asteroid> objects) {
-  //   objects.forEach((Asteroid object_b) => this.hasCollided(object_a, object_b));
-  // }
+  void hasCollidedWithMany(Bullet bullet, List<Asteroid> asteroids) {
+    asteroids.forEach((Asteroid asteroid) => this.hasCollided(bullet, asteroid));
+  }
 
-  // void hasCollided(Asteroid object_a, Asteroid object_b) {
-  //   double distToHit = object_a.size + object_b.size;
-  //   if (object_a.x - object_b.x < distToHit && object_a.y - object_b.y < distToHit) {
-  //     double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
-  //     if (object_a != object_b && distBetween < distToHit) {
-  //       destroyable.add(object_a);
-  //       destroyable.add(object_b);
-  //     }
-  //   }
-  // }
+  void hasCollided(Bullet bullet, Asteroid asteroid) {
+    if (bullet.x - asteroid.x < asteroid.size && bullet.y - asteroid.y < asteroid.size) {
+      double distBetween = sqrt(pow(bullet.x - asteroid.x, 2) + pow(bullet.y - asteroid.y, 2));
+      if (distBetween < asteroid.size) {
+        asteroid.destroy();
+      }
+    }
+  }
 
   void addBullet(double dx, double dy) {
     double direction = atan2(dy - y, dx - x);
