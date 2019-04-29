@@ -5,7 +5,7 @@ import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/util.dart';
 import 'package:asteroids_flutter/components/player.dart';
-import 'package:asteroids_flutter/components/score.dart';
+import 'package:asteroids_flutter/components/time.dart';
 import 'package:asteroids_flutter/systems/asteroids.dart';
 import 'package:asteroids_flutter/systems/bullets.dart';
 import 'package:asteroids_flutter/systems/explosions.dart';
@@ -19,7 +19,7 @@ class MyGame extends BaseGame {
   Explosions explosions;
   Missles missles;
   Player player;
-  Score score;
+  Time time;
   Size screenSize;
   TapGestureRecognizer tapper;
   Util flameUtil;
@@ -36,7 +36,7 @@ class MyGame extends BaseGame {
     explosions =  new Explosions(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
     player = new Player(screenSize.width / 2, screenSize.height / 2);
-    score = new Score(screenSize.width, screenSize.height);
+    time = new Time(screenSize.width, screenSize.height);
     tapper = TapGestureRecognizer();
     flameUtil = Util();
 
@@ -51,7 +51,7 @@ class MyGame extends BaseGame {
     explosions.render(canvas);
     missles.render(canvas);
     player.render(canvas);
-    score.render(canvas);
+    time.render(canvas);
   }
 
   @override
@@ -61,6 +61,7 @@ class MyGame extends BaseGame {
     explosions.update(t);
     missles.update(t);
     player.update(t);
+    time.update(t);
   }
 
   void resize(Size size) {
