@@ -31,7 +31,7 @@ class MyGame extends BaseGame {
 
     asteroids = new Asteroids(screenSize.width, screenSize.height);
     bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
-    missles =  new Missles(screenSize.width / 2, screenSize.height / 2);
+    missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     player = new Player(screenSize.width / 2, screenSize.height / 2);
     score = new Score(screenSize.width, screenSize.height);
     tapper = TapGestureRecognizer();
@@ -64,7 +64,7 @@ class MyGame extends BaseGame {
 
   void onTapDown(TapDownDetails d) {
     player.fireAt(d.globalPosition.dx, d.globalPosition.dy);
-    bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
+    // bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
     missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
   }
 }

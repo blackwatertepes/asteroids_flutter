@@ -12,13 +12,15 @@ class Missle extends PositionComponent {
   double width;
   double speed;
   double dist;
+  double blastRadius;
 
-  Missle(double init_x, double init_y, double init_direction, double init_speed, double init_distance) {
+  Missle(double init_x, double init_y, double init_direction, double init_speed, double init_distance, double init_blast_radius) {
     x = init_x;
     y = init_y;
     direction = init_direction;
     speed = init_speed;
     dist = init_distance;
+    blastRadius = init_blast_radius;
 
     Random rand = Random();
 
