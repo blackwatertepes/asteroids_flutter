@@ -16,9 +16,6 @@ class Bullet extends PositionComponent {
     y = init_y;
     direction = init_direction;
     speed = init_speed;
-
-    Random rand = Random();
-
     size = init_speed * 2;
   }
 
