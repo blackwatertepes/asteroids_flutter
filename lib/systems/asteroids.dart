@@ -34,7 +34,7 @@ class Asteroids {
       double location = rand.nextDouble() * pi * 2;
       double x = sizeWidth / 2 + cos(location) * spawnRadius;
       double y = sizeHeight / 2 + sin(location) * spawnRadius;
-      double direction = atan2(sizeHeight / 2 - y, sizeWidth / 2 - x) + pi + rand.nextDouble() * directionNoise * 2 - directionNoise;
+      double direction = atan2(sizeHeight / 2 - y, sizeWidth / 2 - x) + rand.nextDouble() * directionNoise * 2 - directionNoise;
       Asteroid asteroid = new Asteroid(x, y, direction);
       // add(asteroid);
       asteroids.add(asteroid);
@@ -56,8 +56,11 @@ class Asteroids {
     if (object_a.x - object_b.x < distToHit && object_a.y - object_b.y < distToHit) {
       double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
       if (object_a != object_b && distBetween < distToHit) {
-        object_a.destroy();
-        object_b.destroy();
+        object_a.hit(object_b.size * object_b.speed);
+        object_b.hit(object_a.size * object_a.speed);
+        double angle = atan2(object_a.y - object_b.y, object_a.x - object_b.x);
+        object_a.direction -= angle;
+        object_b.direction -= angle;
       }
     }
   }

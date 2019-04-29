@@ -31,8 +31,8 @@ class Asteroid extends PositionComponent {
     maxSize = 20;
     randVertices = List<double>();
     maxRotationSpeed = 0.04;
-    minSpeed = 0.5;
-    maxSpeed = 1;
+    minSpeed = 1;
+    maxSpeed = 2;
     numVertices = 20;
     noiseMulti = 2;
     destroyed = false;
@@ -46,13 +46,7 @@ class Asteroid extends PositionComponent {
     size = rand.nextDouble() * (maxSize - minSize) + minSize;
     angle = rand.nextDouble() * pi * 2;
     rotationSpeed = rand.nextDouble() * maxRotationSpeed * 2 - maxRotationSpeed;
-    speed = rand.nextDouble() * (maxSpeed - minSpeed) * 2 - maxSpeed;
-
-    if (speed > 0) {
-      speed += minSpeed;
-    } else {
-      speed -= minSpeed;
-    }
+    speed = rand.nextDouble() * (maxSpeed - minSpeed) + minSpeed;
   }
 
   @override
@@ -81,6 +75,13 @@ class Asteroid extends PositionComponent {
     x += cos(direction) * speed;
     y += sin(direction) * speed;
     angle += rotationSpeed;
+  }
+
+  void hit(double strength) {
+    size -= strength / 8;
+    if (size < minSize) {
+      destroy();
+    }
   }
 
   bool destroy() {
