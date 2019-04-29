@@ -27,10 +27,10 @@ class Missles {
   @override
   void update(double t) {
     missles.forEach((Missle missle) => missle.update(t));
-    missles.removeWhere((Missle missle) => this.exploded(missle));
+    missles.removeWhere((Missle missle) => this.exploded(missle) || missle.destroyed);
 
     // Collision detection...
-    // explosions.forEach((Explosion explosion) => this.hasCollidedWithMany(explosion, asteroids));
+    missles.forEach((Missle missle) => this.hasCollidedWithMany(missle, asteroids));
   }
 
   void addMissle(double dx, double dy) {
@@ -49,16 +49,16 @@ class Missles {
     return false;
   }
 
-  // void hasCollidedWithMany(Explosion explosion, List<Asteroid> asteroids) {
-  //   asteroids.forEach((Asteroid asteroid) => this.hasCollided(explosion, asteroid));
-  // }
+  void hasCollidedWithMany(Missle missle, List<Asteroid> asteroids) {
+    asteroids.forEach((Asteroid asteroid) => this.hasCollided(missle, asteroid));
+  }
 
-  // void hasCollided(Explosion explosion, Asteroid asteroid) {
-  //   if (explosion.x - asteroid.x < explosion.blastRadius + asteroid.size && explosion.y - asteroid.y < explosion.blastRadius + asteroid.size) {
-  //     double distBetween = sqrt(pow(explosion.x - asteroid.x, 2) + pow(explosion.y - asteroid.y, 2));
-  //     if (distBetween < explosion.blastRadius + asteroid.size) {
-  //       asteroid.hit(1);
-  //     }
-  //   }
-  // }
+  void hasCollided(Missle missle, Asteroid asteroid) {
+    if (missle.x - asteroid.x < asteroid.size && missle.y - asteroid.y < asteroid.size) {
+      double distBetween = sqrt(pow(missle.x - asteroid.x, 2) + pow(missle.y - asteroid.y, 2));
+      if (distBetween < asteroid.size) {
+        missle.destroy();
+      }
+    }
+  }
 }

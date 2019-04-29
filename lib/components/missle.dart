@@ -13,6 +13,7 @@ class Missle extends PositionComponent {
   double speed;
   double dist;
   double blastRadius;
+  bool destroyed;
 
   Missle(double init_x, double init_y, double init_direction, double init_speed, double init_distance, double init_blast_radius) {
     x = init_x;
@@ -26,6 +27,7 @@ class Missle extends PositionComponent {
 
     length = 10;
     width =  0.1;
+    destroyed = false;
   }
 
   @override
@@ -48,5 +50,10 @@ class Missle extends PositionComponent {
   void update(double t) {
     x += cos(direction) * speed;
     y += sin(direction) * speed;
+  }
+
+  bool destroy() {
+    destroyed = true;
+    return destroyed;
   }
 }
