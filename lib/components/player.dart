@@ -8,6 +8,7 @@ class Player  {
   double y;
   double size;
   double angle;
+  bool destroyed;
 
   Player(double init_x, double init_y) {
     x = init_x;
@@ -15,6 +16,7 @@ class Player  {
 
     angle = 0;
     size = 10;
+    destroyed = false;
   }
 
   @override
@@ -41,5 +43,10 @@ class Player  {
 
   void fireAt(double at_x, double at_y) {
     angle = atan2(at_y - y, at_x - x);
+  }
+
+  bool destroy() {
+    destroyed = true;
+    return destroyed;
   }
 }

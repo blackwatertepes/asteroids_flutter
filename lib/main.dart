@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/util.dart';
-import 'package:asteroids_flutter/components/player.dart';
 import 'package:asteroids_flutter/components/time.dart';
 import 'package:asteroids_flutter/systems/asteroids.dart';
 import 'package:asteroids_flutter/systems/bullets.dart';
 import 'package:asteroids_flutter/systems/explosions.dart';
 import 'package:asteroids_flutter/systems/missles.dart';
+import 'package:asteroids_flutter/systems/players.dart';
 
 void main() => runApp(MyGame().widget);
 
@@ -18,7 +18,7 @@ class MyGame extends BaseGame {
   Bullets bullets;
   Explosions explosions;
   Missles missles;
-  Player player;
+  Players players;
   Time time;
   Size screenSize;
   TapGestureRecognizer tapper;
@@ -35,7 +35,7 @@ class MyGame extends BaseGame {
     bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     explosions =  new Explosions(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
-    player = new Player(screenSize.width / 2, screenSize.height / 2);
+    players = new Players(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     time = new Time(screenSize.width, screenSize.height);
     tapper = TapGestureRecognizer();
     flameUtil = Util();
@@ -50,7 +50,7 @@ class MyGame extends BaseGame {
     bullets.render(canvas);
     explosions.render(canvas);
     missles.render(canvas);
-    player.render(canvas);
+    players.render(canvas);
     time.render(canvas);
   }
 
@@ -60,7 +60,7 @@ class MyGame extends BaseGame {
     bullets.update(t);
     explosions.update(t);
     missles.update(t);
-    player.update(t);
+    players.update(t);
     time.update(t);
   }
 
@@ -69,8 +69,10 @@ class MyGame extends BaseGame {
   }
 
   void onTapDown(TapDownDetails d) {
-    player.fireAt(d.globalPosition.dx, d.globalPosition.dy);
-    // bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
-    missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
+    bool fired = players.fireAt(d.globalPosition.dx, d.globalPosition.dy);
+    if (fired) {
+      // bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
+      missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
+    }
   }
 }
