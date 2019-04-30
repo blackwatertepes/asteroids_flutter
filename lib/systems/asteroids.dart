@@ -13,6 +13,7 @@ class Asteroids {
   double spawnGrowthRate;
   double sizeWidth;
   double sizeHeight;
+  bool running;
 
   Asteroids(double init_sizeWidth, double init_sizeHeight) {
     sizeWidth = init_sizeWidth;
@@ -26,6 +27,7 @@ class Asteroids {
     maxSpawnRate = 0.1;
     spawnGrowthRate = 0.002 / 60; // @ 60fps, .002 is 50 seconds
     spawnRate = minSpawnRate;
+    running = false;
   }
 
   @override
@@ -46,7 +48,7 @@ class Asteroids {
       asteroids.add(asteroid);
     }
 
-    if (spawnRate < maxSpawnRate) {
+    if (running && spawnRate < maxSpawnRate) {
       spawnRate += spawnGrowthRate;
     }
 
@@ -79,6 +81,15 @@ class Asteroids {
         }
       }
     }
+  }
+
+  void start() {
+    running = true;
+  }
+
+  void stop() {
+    running = false;
+    spawnRate = minSpawnRate;
   }
 
   double reflection(direction, normal) {

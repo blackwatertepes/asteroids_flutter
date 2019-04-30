@@ -25,6 +25,8 @@ class MyGame extends BaseGame {
   Util flameUtil;
   bool inProgress;
   double switchGunRadius;
+  int gameEndedAt;
+  int restartDelay;
 
   MyGame() {
     initialize();
@@ -47,6 +49,8 @@ class MyGame extends BaseGame {
 
     inProgress = false;
     switchGunRadius = 20;
+    gameEndedAt = 0;
+    restartDelay = 1000;
   }
 
   @override
@@ -77,11 +81,14 @@ class MyGame extends BaseGame {
     players.addPlayer();
     time.reset();
     inProgress = true;
+    asteroids.start();
   }
 
   void endGame() {
     time.stop();
     inProgress = false;
+    asteroids.stop();
+    gameEndedAt = DateTime.now().millisecondsSinceEpoch;
   }
 
   void onTapDown(TapDownDetails d) {
@@ -92,7 +99,7 @@ class MyGame extends BaseGame {
       } else {
         players.fireAt(d.globalPosition.dx, d.globalPosition.dy);
       }
-    } else {
+    } else if (gameEndedAt < DateTime.now().millisecondsSinceEpoch - restartDelay) {
       startGame();
     }
   }
