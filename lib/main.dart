@@ -23,6 +23,8 @@ class MyGame extends BaseGame {
   Size screenSize;
   TapGestureRecognizer tapper;
   Util flameUtil;
+  bool inProgress;
+  double switchGunRadius;
 
   MyGame() {
     initialize();
@@ -35,13 +37,16 @@ class MyGame extends BaseGame {
     bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     explosions =  new Explosions(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
-    players = new Players(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, this.endGame);
+    players = new Players(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, this.endGame, missles.addMissle, bullets.addBullet);
     time = new Time(screenSize.width, screenSize.height);
     tapper = TapGestureRecognizer();
     flameUtil = Util();
 
     tapper.onTapDown = onTapDown;
     flameUtil.addGestureRecognizer(tapper);
+
+    inProgress = false;
+    switchGunRadius = 20;
   }
 
   @override
@@ -71,17 +76,22 @@ class MyGame extends BaseGame {
   void startGame() {
     players.addPlayer();
     time.reset();
+    inProgress = true;
   }
 
   void endGame() {
     time.stop();
+    inProgress = false;
   }
 
   void onTapDown(TapDownDetails d) {
-    bool fired = players.fireAt(d.globalPosition.dx, d.globalPosition.dy);
-    if (fired) {
-      // bullets.addBullet(d.globalPosition.dx, d.globalPosition.dy);
-      missles.addMissle(d.globalPosition.dx, d.globalPosition.dy);
+    if (inProgress) {
+      double distFromCenter = sqrt(pow(screenSize.width / 2 - d.globalPosition.dx, 2) + pow(screenSize.height / 2 - d.globalPosition.dy, 2));
+      if (distFromCenter <= switchGunRadius) {
+        players.switchGun();
+      } else {
+        players.fireAt(d.globalPosition.dx, d.globalPosition.dy);
+      }
     } else {
       startGame();
     }

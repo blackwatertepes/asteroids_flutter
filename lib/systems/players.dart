@@ -9,14 +9,21 @@ class Players {
   double x;
   double y;
   Function endGame;
+  Function addMissle;
+  Function addBullet;
+  Function addProjectile;
 
-  Players(double init_x, double init_y, List<Asteroid> init_asteroids, Function end_game) {
+  Players(double init_x, double init_y, List<Asteroid> init_asteroids, Function end_game, Function add_missle, Function add_bullet) {
     x = init_x;
     y = init_y;
     endGame = end_game;
+    addMissle = add_missle;
+    addBullet = add_bullet;
 
     players = List<Player>();
     asteroids = init_asteroids;
+
+    addProjectile = addBullet;
   }
 
   @override
@@ -40,7 +47,16 @@ class Players {
 
   bool fireAt(double dx, double dy) {
     players.forEach((Player player) => player.fireAt(dx, dy));
+    addProjectile(dx, dy);
     return players.length > 0;
+  }
+
+  void switchGun() {
+    if (addProjectile == addBullet) {
+      addProjectile = addMissle;
+    } else {
+      addProjectile = addBullet;
+    }
   }
 
   void hasCollidedWithMany(Player player, List<Asteroid> asteroids) {
