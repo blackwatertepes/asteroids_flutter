@@ -61,8 +61,12 @@ class Asteroids {
         // Reflection/Bounce...
         double angle = atan2(object_a.y - object_b.y, object_a.x - object_b.x);
         double normal = angle + pi;
-        object_a.direction = reflection(object_a.direction, normal);
-        object_b.direction = reflection(object_b.direction, normal);
+        if (!object_a.destroyed) {
+          object_b.direction = reflection(object_b.direction, normal);
+        }
+        if (!object_b.destroyed) {
+          object_a.direction = reflection(object_a.direction, normal);
+        }
       }
     }
   }
