@@ -37,7 +37,7 @@ class Time  {
       if (total > 0) {
         String title = "${minutesStr}:${secondsStr}";
         TextPainter titlePainter = Flame.util.text(title, color: Colors.white, fontSize: 28.0);
-        titlePainter.paint(canvas, Offset(10, 350));
+        titlePainter.paint(canvas, Offset(10, 320));
       }
     }
   }

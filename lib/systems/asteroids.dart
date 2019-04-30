@@ -58,11 +58,23 @@ class Asteroids {
       if (object_a != object_b && distBetween < distToHit) {
         object_a.hit(0.5);
         object_b.hit(0.5);
+        // Reflection/Bounce...
         double angle = atan2(object_a.y - object_b.y, object_a.x - object_b.x);
-        object_a.direction -= angle;
-        object_b.direction -= angle;
+        double normal = angle + pi;
+        object_a.direction = reflection(object_a.direction, normal);
+        object_b.direction = reflection(object_b.direction, normal);
       }
     }
+  }
+
+  double reflection(direction, normal) {
+    double dx = cos(direction);
+    double dy = sin(direction);
+    double nx = cos(normal);
+    double ny = sin(normal);
+    double rx = dx - 2 * dx * pow(nx, 2);
+    double ry = dy - 2 * dy * pow(ny, 2);
+    return atan2(ry, rx);
   }
 
   bool offScreen(Asteroid object) {
