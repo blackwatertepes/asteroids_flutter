@@ -12,12 +12,12 @@ class Bullet extends PositionComponent {
   double speed;
   bool destroyed;
 
-  Bullet(double init_x, double init_y, double init_direction, double init_speed) {
+  Bullet(double init_x, double init_y, double init_direction) {
     x = init_x;
     y = init_y;
     direction = init_direction;
-    speed = init_speed;
-    size = init_speed * 2;
+    speed = 8;
+    size = speed;
     destroyed = false;
   }
 

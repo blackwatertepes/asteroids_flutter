@@ -36,7 +36,7 @@ class Missles {
   void addMissle(double dx, double dy) {
     double direction = atan2(dy - y, dx - x);
     double distance = sqrt(pow(dx - x, 2) + pow(dy - y, 2)); // * 2
-    Missle missle = new Missle(x, y, direction, 2, distance, 20);
+    Missle missle = new Missle(x, y, direction, distance, 20);
     missles.add(missle);
   }
 

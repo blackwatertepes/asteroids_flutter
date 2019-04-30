@@ -8,6 +8,9 @@ class Asteroids {
   double boundRadius; // Where asteroids die
   double directionNoise; // How much asteroids stray from center
   double spawnRate; // How quickly new asteroids spawn
+  double minSpawnRate;
+  double maxSpawnRate;
+  double spawnGrowthRate;
   double sizeWidth;
   double sizeHeight;
 
@@ -19,7 +22,10 @@ class Asteroids {
     spawnRadius = (sizeWidth + sizeHeight) / 2;
     boundRadius = spawnRadius + 10;
     directionNoise = 0.8;
-    spawnRate = 0.1;
+    minSpawnRate = 0.01;
+    maxSpawnRate = 0.1;
+    spawnGrowthRate = 0.002 / 60; // @ 60fps, .002 is 50 seconds
+    spawnRate = minSpawnRate;
   }
 
   @override
@@ -38,6 +44,10 @@ class Asteroids {
       Asteroid asteroid = new Asteroid(x, y, direction);
       // add(asteroid);
       asteroids.add(asteroid);
+    }
+
+    if (spawnRate < maxSpawnRate) {
+      spawnRate += spawnGrowthRate;
     }
 
     asteroids.forEach((Asteroid asteroid) => asteroid.update(t));

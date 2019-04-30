@@ -41,14 +41,14 @@ class Bullets {
       double distBetween = sqrt(pow(bullet.x - asteroid.x, 2) + pow(bullet.y - asteroid.y, 2));
       if (distBetween < asteroid.size) {
         bullet.destroy();
-        asteroid.hit(0.4);
+        asteroid.hit(0.75);
       }
     }
   }
 
   void addBullet(double dx, double dy) {
     double direction = atan2(dy - y, dx - x);
-    Bullet bullet = new Bullet(x, y, direction, 4);
+    Bullet bullet = new Bullet(x, y, direction);
     bullets.add(bullet);
   }
 
