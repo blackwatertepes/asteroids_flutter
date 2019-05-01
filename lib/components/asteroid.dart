@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flame/components/component.dart';
 
-class Asteroid extends PositionComponent {
+class Asteroid {
   List<double> randVertices;
   Rect boxRect;
   Paint boxPaint;

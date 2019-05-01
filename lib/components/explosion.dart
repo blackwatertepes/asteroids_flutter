@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flame/components/component.dart';
 
-class Explosion extends PositionComponent {
+class Explosion {
   Paint boxPaint;
   double x;
   double y;

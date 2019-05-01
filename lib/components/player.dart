@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-class Player  {
+class Player {
   Rect boxRect;
   Paint boxPaint;
   double x;

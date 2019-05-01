@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flame/components/component.dart';
 
-class Missle extends PositionComponent {
+class Missle {
   Rect boxRect;
   Paint boxPaint;
   double x;

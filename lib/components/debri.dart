@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flame/components/component.dart';
 
-class Debri extends PositionComponent {
+class Debri {
   Rect boxRect;
   Paint boxPaint;
   double x;

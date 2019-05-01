@@ -30,10 +30,6 @@ class Time  {
     textPainter.paint(canvas, Offset(sizeWidth - 80, 30));
 
     if (!running) {
-      String begin = "Click anywhere.";
-      TextPainter beginPainter = Flame.util.text(begin, color: Colors.white, fontSize: 20.0);
-      beginPainter.paint(canvas, Offset(10, 300));
-
       if (total > 0) {
         String title = "${minutesStr}:${secondsStr}";
         TextPainter titlePainter = Flame.util.text(title, color: Colors.white, fontSize: 28.0);

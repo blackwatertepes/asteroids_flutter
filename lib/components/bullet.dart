@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flame/components/component.dart';
 
-class Bullet extends PositionComponent {
+class Bullet {
   Rect boxRect;
   Paint boxPaint;
   double x;
