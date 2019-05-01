@@ -14,10 +14,12 @@ class Asteroids {
   double sizeWidth;
   double sizeHeight;
   bool running;
+  Function createDebris;
 
-  Asteroids(double init_sizeWidth, double init_sizeHeight) {
+  Asteroids(double init_sizeWidth, double init_sizeHeight, Function create_debris) {
     sizeWidth = init_sizeWidth;
     sizeHeight = init_sizeHeight;
+    createDebris = create_debris;
 
     asteroids = List<Asteroid>();
     spawnRadius = (sizeWidth + sizeHeight) / 2;
@@ -43,7 +45,7 @@ class Asteroids {
       double x = sizeWidth / 2 + cos(location) * spawnRadius;
       double y = sizeHeight / 2 + sin(location) * spawnRadius;
       double direction = atan2(sizeHeight / 2 - y, sizeWidth / 2 - x) + rand.nextDouble() * directionNoise * 2 - directionNoise;
-      Asteroid asteroid = new Asteroid(x, y, direction);
+      Asteroid asteroid = new Asteroid(x, y, direction, createDebris);
       // add(asteroid);
       asteroids.add(asteroid);
     }
@@ -70,6 +72,7 @@ class Asteroids {
       if (object_a != object_b && distBetween < distToHit) {
         object_a.hit(0.5);
         object_b.hit(0.5);
+
         // Reflection/Bounce...
         double angle = atan2(object_a.y - object_b.y, object_a.x - object_b.x);
         double normal = angle + pi;

@@ -30,7 +30,7 @@ class Time  {
     textPainter.paint(canvas, Offset(sizeWidth - 80, 30));
 
     if (!running) {
-      String begin = "Click anywhere to start";
+      String begin = "Click anywhere.";
       TextPainter beginPainter = Flame.util.text(begin, color: Colors.white, fontSize: 20.0);
       beginPainter.paint(canvas, Offset(10, 300));
 

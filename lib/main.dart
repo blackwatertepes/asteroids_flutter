@@ -7,6 +7,7 @@ import 'package:flame/util.dart';
 import 'package:asteroids_flutter/components/time.dart';
 import 'package:asteroids_flutter/systems/asteroids.dart';
 import 'package:asteroids_flutter/systems/bullets.dart';
+import 'package:asteroids_flutter/systems/debris.dart';
 import 'package:asteroids_flutter/systems/explosions.dart';
 import 'package:asteroids_flutter/systems/missles.dart';
 import 'package:asteroids_flutter/systems/players.dart';
@@ -16,6 +17,7 @@ void main() => runApp(MyGame().widget);
 class MyGame extends BaseGame {
   Asteroids asteroids;
   Bullets bullets;
+  Debris debris;
   Explosions explosions;
   Missles missles;
   Players players;
@@ -35,7 +37,8 @@ class MyGame extends BaseGame {
   void initialize() async {
     resize(await Flame.util.initialDimensions());
 
-    asteroids = new Asteroids(screenSize.width, screenSize.height);
+    debris =  new Debris(screenSize.width, screenSize.height);
+    asteroids = new Asteroids(screenSize.width, screenSize.height, debris.createDebris);
     bullets =  new Bullets(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     explosions =  new Explosions(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     missles =  new Missles(screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
@@ -57,6 +60,7 @@ class MyGame extends BaseGame {
   void render(Canvas canvas) {
     asteroids.render(canvas);
     bullets.render(canvas);
+    debris.render(canvas);
     explosions.render(canvas);
     missles.render(canvas);
     players.render(canvas);
@@ -67,6 +71,7 @@ class MyGame extends BaseGame {
   void update(double t) {
     asteroids.update(t);
     bullets.update(t);
+    debris.update(t);
     explosions.update(t);
     missles.update(t);
     players.update(t);

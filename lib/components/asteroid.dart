@@ -21,11 +21,13 @@ class Asteroid extends PositionComponent {
   double numVertices;
   double noiseMulti;
   bool destroyed;
+  Function createDebris;
 
-  Asteroid(double init_x, double init_y, double init_direction) {
+  Asteroid(double init_x, double init_y, double init_direction, Function create_debris) {
     x = init_x;
     y = init_y;
     direction = init_direction;
+    createDebris = create_debris;
 
     minSize = 10;
     maxSize = 20;
@@ -77,15 +79,19 @@ class Asteroid extends PositionComponent {
     angle += rotationSpeed;
   }
 
-  void hit(double strength) {
+  // Returns whether or not is was destroyed
+  bool hit(double strength) {
     size -= strength * 4;
     if (size < minSize) {
       destroy();
+      return true;
     }
+    return false;
   }
 
   bool destroy() {
     destroyed = true;
+    createDebris(this);
     return destroyed;
   }
 }
