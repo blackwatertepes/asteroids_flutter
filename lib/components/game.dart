@@ -1,4 +1,4 @@
-// import 'dart:math';
+import 'dart:math';
 import 'dart:ui';
 // import 'package:flutter/gestures.dart';
 // import 'package:flutter/material.dart';
@@ -7,18 +7,13 @@ import 'package:flame/game.dart';
 // import 'package:flame/util.dart';
 import 'package:Asteroidio/components/player.dart';
 import 'package:Asteroidio/components/time.dart';
-import 'package:Asteroidio/systems/asteroids.dart';
+import 'package:Asteroidio/components/asteroid.dart';
 // import 'package:Asteroidio/systems/bullets.dart';
 // import 'package:Asteroidio/systems/debris.dart';
 // import 'package:Asteroidio/systems/explosions.dart';
 // import 'package:Asteroidio/systems/missles.dart';
 
 class Game extends BaseGame {
-  Asteroids asteroids;
-  // Bullets bullets;
-  // Debris debris;
-  // Explosions explosions;
-  // Missles missles;
   Time time;
   Size screenSize;
   // TapGestureRecognizer tapper;
@@ -27,6 +22,16 @@ class Game extends BaseGame {
   double switchGunRadius;
   int gameEndedAt;
   int restartDelay;
+  double spawnRadius; // Where asteroids spawn
+  double boundRadius; // Where asteroids die
+  double directionNoise; // How much asteroids stray from center
+  double spawnRate; // How quickly new asteroids spawn
+  double minSpawnRate;
+  double maxSpawnRate;
+  double spawnGrowthRate;
+  double sizeWidth;
+  double sizeHeight;
+  bool running;
 
   Game() {
     initialize();
@@ -36,7 +41,6 @@ class Game extends BaseGame {
     resize(await Flame.util.initialDimensions());
 
     // debris =  new Debris(this, screenSize.width, screenSize.height);
-    asteroids = new Asteroids(this, screenSize.width, screenSize.height);//, debris.createDebris);
     // bullets =  new Bullets(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     // explosions =  new Explosions(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     // missles =  new Missles(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
@@ -53,20 +57,49 @@ class Game extends BaseGame {
     switchGunRadius = 20;
     gameEndedAt = 0;
     restartDelay = 1000;
+    spawnRadius = (screenSize.width + screenSize.height) / 2;
+    boundRadius = spawnRadius + 10;
+    directionNoise = 0.8;
+    minSpawnRate = 0.01;
+    maxSpawnRate = 0.1;
+    spawnGrowthRate = 0.002 / 60; // @ 60fps, .002 is 50 seconds
+    spawnRate = minSpawnRate;
+    running = false;
 
     // FIXME: Just for development...
     startGame();
-  }
-
-  void addToGame(c) {
-    add(c);
   }
 
   @override
   void update(double t) {
     super.update(t);
 
-    asteroids.update(t);
+    Random rand = Random();
+    if (rand.nextDouble() < spawnRate) {
+      double location = rand.nextDouble() * pi * 2;
+      double x = screenSize.width / 2 + cos(location) * spawnRadius;
+      double y = screenSize.height / 2 + sin(location) * spawnRadius;
+      double direction = atan2(screenSize.height / 2 - y, screenSize.width / 2 - x) + rand.nextDouble() * directionNoise * 2 - directionNoise;
+      Asteroid asteroid = new Asteroid(direction)
+        ..x = x
+        ..y = y;
+      add(asteroid);
+    }
+
+    if (running && spawnRate < maxSpawnRate) {
+      spawnRate += spawnGrowthRate;
+    }
+
+    // components.where((c) => c is Asteroid).where((c) => offScreen(c)).forEach((c) => c.destroy());
+    components.forEach((c) {
+      if (c is Asteroid && offScreen(c)) {
+        c.destroyed = true;
+      }
+    });
+
+    // Collision detection...
+    // asteroids.forEach((Asteroid asteroid) => this.hasCollidedWithMany(asteroid, asteroids));
+
   //   bullets.update(t);
     // debris.update(t);
   //   explosions.update(t);
@@ -87,13 +120,13 @@ class Game extends BaseGame {
     addPlayer();
     time.reset();
     inProgress = true;
-    asteroids.start();
+    start();
   }
 
   void endGame() {
     time.stop();
     inProgress = false;
-    asteroids.stop();
+    stop();
     gameEndedAt = DateTime.now().millisecondsSinceEpoch;
   }
 
@@ -143,4 +176,56 @@ class Game extends BaseGame {
   //     }
   //   }
   // }
+
+  // void hasCollidedWithMany(Asteroid objectA, List<Asteroid> objects) {
+  //   objects.forEach((Asteroid objectB) => this.hasCollided(objectA, objectB));
+  // }
+
+  // void hasCollided(Asteroid objectA, Asteroid objectB) {
+  //   double distToHit = objectA.size + objectB.size;
+  //   if (objectA.x - objectB.x < distToHit && objectA.y - objectB.y < distToHit) {
+  //     double distBetween = sqrt(pow(objectA.x - objectB.x, 2) + pow(objectA.y - objectB.y, 2));
+  //     if (objectA != objectB && distBetween < distToHit) {
+  //       objectA.hit(0.5);
+  //       objectB.hit(0.5);
+
+  //       // Reflection/Bounce...
+  //       double angle = atan2(objectA.y - objectB.y, objectA.x - objectB.x);
+  //       double normal = angle + pi;
+  //       if (!objectA.destroyed) {
+  //         objectB.direction = reflection(objectB.direction, normal);
+  //       }
+  //       if (!objectB.destroyed) {
+  //         objectA.direction = reflection(objectA.direction, normal);
+  //       }
+  //     }
+  //   }
+  // }
+
+  void start() {
+    running = true;
+  }
+
+  void stop() {
+    running = false;
+    spawnRate = minSpawnRate;
+  }
+
+  // double reflection(direction, normal) {
+  //   double dx = cos(direction);
+  //   double dy = sin(direction);
+  //   double nx = cos(normal);
+  //   double ny = sin(normal);
+  //   double rx = dx - 2 * dx * pow(nx, 2);
+  //   double ry = dy - 2 * dy * pow(ny, 2);
+  //   return atan2(ry, rx);
+  // }
+
+  bool offScreen(Asteroid a) {
+    double distFromCenter = sqrt(pow(screenSize.width / 2 - a.x, 2) + pow(screenSize.height / 2 - a.y, 2));
+    if (distFromCenter > boundRadius) {
+      return true;
+    }
+    return false;
+  }
 }
