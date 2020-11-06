@@ -3,7 +3,8 @@ import 'package:flame_splash_screen/flame_splash_screen.dart';
 import 'package:Asteroidio/components/game.dart';
 
 void main() {
-  runApp(MyApp());
+  // runApp(MyApp());
+  runApp(Game().widget);
 }
 
 class MyApp extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
+// import 'package:flame/components/component.dart';
+// import 'package:flutter/material.dart';
 import 'package:Asteroidio/components/asteroid.dart';
 import 'package:Asteroidio/components/debri.dart';
 import 'package:Asteroidio/components/game.dart';
@@ -10,10 +11,10 @@ class Debris {
   double screenWidth;
   double screenHeight;
 
-  Debris(Game _gameRef, double init_screenWidth, double init_screenHeight) {
+  Debris(Game _gameRef, double initScreenWidth, double initScreenHeight) {
     gameRef = _gameRef;
-    screenWidth = init_screenWidth;
-    screenHeight = init_screenHeight;
+    screenWidth = initScreenWidth;
+    screenHeight = initScreenHeight;
 
     debris = List<Debri>();
   }

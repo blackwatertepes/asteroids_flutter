@@ -5,23 +5,20 @@ import 'package:flame/components/component.dart';
 class Player extends PositionComponent {
   Rect boxRect;
   Paint boxPaint;
-  double x;
-  double y;
   double size;
   double angle;
   bool destroyed;
 
-  Player(double init_x, double init_y) {
-    x = init_x;
-    y = init_y;
-
+  Player() {
     angle = 0;
-    size = 10;
+    size = (width + height) / 2;
     destroyed = false;
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas c) {
+    prepareCanvas(c);
+
     double tri = pi * 2 / 3;
     Path path = Path()
       ..moveTo(x + cos(angle) * size, y + sin(angle) * size)
@@ -35,19 +32,25 @@ class Player extends PositionComponent {
     boxPaint.style = PaintingStyle.stroke;
     boxPaint.strokeWidth = 2;
 
-    canvas.drawPath(path, boxPaint);
+    width = 100;
+    height = 100;
+
+    c.drawPath(path, boxPaint);
+
+    c.drawRect(Rect.fromLTWH(0, 0, width, height), boxPaint);
   }
 
   @override
   void update(double t) {
+    super.update(t);
   }
 
-  void fireAt(double at_x, double at_y) {
-    angle = atan2(at_y - y, at_x - x);
+  void fireAt(double atX, double atY) {
+    angle = atan2(atY - y, atX - x);
   }
 
-  bool destroy() {
-    destroyed = true;
-    return destroyed;
-  }
+  // bool destroy() {
+  //   destroyed = true;
+  //   return destroyed;
+  // }
 }

@@ -21,13 +21,14 @@ class Asteroid extends PositionComponent {
   double numVertices;
   double noiseMulti;
   bool destroyed;
-  Function createDebris;
+  // Function createDebris;
 
-  Asteroid(double initX, double initY, double initDirection, Function createDebris) {
+  // Asteroid(double initX, double initY, double initDirection, Function _createDebris) {
+  Asteroid(double initX, double initY, double initDirection) {
     x = initX;
     y = initY;
     direction = initDirection;
-    createDebris = createDebris;
+    // createDebris = _createDebris;
 
     minSize = 10;
     maxSize = 20;
@@ -52,7 +53,9 @@ class Asteroid extends PositionComponent {
   }
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas c) {
+    prepareCanvas(c);
+
     Path path = Path()
       ..moveTo(x + size * cos(angle), y + size * sin(angle));
 
@@ -69,16 +72,16 @@ class Asteroid extends PositionComponent {
     boxPaint.style = PaintingStyle.stroke;
     boxPaint.strokeWidth = 2;
 
-    canvas.drawPath(path, boxPaint);
+    c.drawPath(path, boxPaint);
   }
 
   @override
   void update(double t) {
     super.update(t);
 
-    x += cos(direction) * speed;
-    y += sin(direction) * speed;
-    angle += rotationSpeed;
+    // x += cos(direction) * speed;
+    // y += sin(direction) * speed;
+    // angle += rotationSpeed;
   }
 
   // Returns whether or not is was destroyed
@@ -93,7 +96,7 @@ class Asteroid extends PositionComponent {
 
   bool destroy() {
     destroyed = true;
-    createDebris(this);
+    // this.createDebris(this);
     return destroyed;
   }
 }

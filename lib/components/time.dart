@@ -4,6 +4,7 @@ import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:flame/components/text_component.dart';
 import 'package:flame/text_config.dart';
 import 'package:Asteroidio/components/game.dart';
+// import 'package:flutter/semantics.dart';
 // import 'package:flutter/services.dart';
 // import 'package:play_games/player_games.dart';
 
@@ -13,6 +14,7 @@ class Time extends PositionComponent with HasGameRef<Game> {
   int start;
   int total;
   bool running;
+  TextComponent timer;
 
   Time(double initSizeWidth, double initSizeHeight) {
     sizeWidth = initSizeWidth;
@@ -24,16 +26,22 @@ class Time extends PositionComponent with HasGameRef<Game> {
     running = false;
   }
 
-  @override
-  void render(Canvas canvas) {
+  String time() {
     int minutes = (total / 60000).floor();
     int seconds = (total / 1000).floor() % 60;
     String secondsStr = "$seconds".padLeft(2, "0");
     String minutesStr = "$minutes".padLeft(2, "0");
+    String text = "Time: $minutesStr:$secondsStr";
+    return text;
+  }
 
+  @override
+  onMount() {
     TextConfig timeConfig = TextConfig(fontSize: 14.0, color: Colors.white);
 
-    gameRef.add(TextComponent("Time: $minutesStr:$secondsStr", config: timeConfig)
+    timer = TextComponent(time(), config: timeConfig);
+
+    gameRef.add(timer
       ..x = sizeWidth - 80
       ..y = 30);
 
@@ -41,11 +49,16 @@ class Time extends PositionComponent with HasGameRef<Game> {
       if (total > 0) {
         TextConfig scoreConfig = TextConfig(fontSize: 28.0, color: Colors.white);
 
-        gameRef.add(TextComponent("$minutesStr:$secondsStr", config: scoreConfig)
+        gameRef.add(TextComponent(time(), config: scoreConfig)
           ..x = 10
           ..y = 320);
       }
     }
+  }
+
+  @override
+  void render(Canvas c) {
+    prepareCanvas(c);
   }
 
   @override
@@ -54,6 +67,7 @@ class Time extends PositionComponent with HasGameRef<Game> {
 
     if (running) {
       total = DateTime.now().millisecondsSinceEpoch - start;
+      timer.text = time();
     }
   }
 

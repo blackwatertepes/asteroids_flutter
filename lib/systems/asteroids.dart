@@ -17,13 +17,14 @@ class Asteroids {
   double sizeWidth;
   double sizeHeight;
   bool running;
-  Function createDebris;
+  // Function createDebris;
 
-  Asteroids(Game _gameRef, double init_sizeWidth, double init_sizeHeight, Function create_debris) {
+  // Asteroids(Game _gameRef, double init_sizeWidth, double init_sizeHeight, Function create_debris) {
+  Asteroids(Game _gameRef, double initSizeWidth, double initSizeHeight) {
     gameRef = _gameRef;
-    sizeWidth = init_sizeWidth;
-    sizeHeight = init_sizeHeight;
-    createDebris = create_debris;
+    sizeWidth = initSizeWidth;
+    sizeHeight = initSizeHeight;
+    // createDebris = create_debris;
 
     asteroids = List<Asteroid>();
     spawnRadius = (sizeWidth + sizeHeight) / 2;
@@ -43,7 +44,7 @@ class Asteroids {
       double x = sizeWidth / 2 + cos(location) * spawnRadius;
       double y = sizeHeight / 2 + sin(location) * spawnRadius;
       double direction = atan2(sizeHeight / 2 - y, sizeWidth / 2 - x) + rand.nextDouble() * directionNoise * 2 - directionNoise;
-      Asteroid asteroid = new Asteroid(x, y, direction, createDebris);
+      Asteroid asteroid = new Asteroid(200, 200, direction);//(x, y, direction);//, createDebris);
       gameRef.add(asteroid);
       asteroids.add(asteroid);
     }
@@ -52,33 +53,33 @@ class Asteroids {
       spawnRate += spawnGrowthRate;
     }
 
-    asteroids.forEach((Asteroid asteroid) => asteroid.update(t));
-    asteroids.removeWhere((Asteroid asteroid) => this.offScreen(asteroid) || asteroid.destroyed);
+    // asteroids.forEach((Asteroid asteroid) => asteroid.update(t));
+    // asteroids.removeWhere((Asteroid asteroid) => this.offScreen(asteroid) || asteroid.destroyed);
 
     // Collision detection...
-    asteroids.forEach((Asteroid asteroid) => this.hasCollidedWithMany(asteroid, asteroids));
+    // asteroids.forEach((Asteroid asteroid) => this.hasCollidedWithMany(asteroid, asteroids));
   }
 
-  void hasCollidedWithMany(Asteroid object_a, List<Asteroid> objects) {
-    objects.forEach((Asteroid object_b) => this.hasCollided(object_a, object_b));
+  void hasCollidedWithMany(Asteroid objectA, List<Asteroid> objects) {
+    objects.forEach((Asteroid objectB) => this.hasCollided(objectA, objectB));
   }
 
-  void hasCollided(Asteroid object_a, Asteroid object_b) {
-    double distToHit = object_a.size + object_b.size;
-    if (object_a.x - object_b.x < distToHit && object_a.y - object_b.y < distToHit) {
-      double distBetween = sqrt(pow(object_a.x - object_b.x, 2) + pow(object_a.y - object_b.y, 2));
-      if (object_a != object_b && distBetween < distToHit) {
-        object_a.hit(0.5);
-        object_b.hit(0.5);
+  void hasCollided(Asteroid objectA, Asteroid objectB) {
+    double distToHit = objectA.size + objectB.size;
+    if (objectA.x - objectB.x < distToHit && objectA.y - objectB.y < distToHit) {
+      double distBetween = sqrt(pow(objectA.x - objectB.x, 2) + pow(objectA.y - objectB.y, 2));
+      if (objectA != objectB && distBetween < distToHit) {
+        objectA.hit(0.5);
+        objectB.hit(0.5);
 
         // Reflection/Bounce...
-        double angle = atan2(object_a.y - object_b.y, object_a.x - object_b.x);
+        double angle = atan2(objectA.y - objectB.y, objectA.x - objectB.x);
         double normal = angle + pi;
-        if (!object_a.destroyed) {
-          object_b.direction = reflection(object_b.direction, normal);
+        if (!objectA.destroyed) {
+          objectB.direction = reflection(objectB.direction, normal);
         }
-        if (!object_b.destroyed) {
-          object_a.direction = reflection(object_a.direction, normal);
+        if (!objectB.destroyed) {
+          objectA.direction = reflection(objectA.direction, normal);
         }
       }
     }
