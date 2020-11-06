@@ -90,11 +90,8 @@ class Game extends BaseGame {
       spawnRate += spawnGrowthRate;
     }
 
-    // components.where((c) => c is Asteroid).where((c) => offScreen(c)).forEach((c) => c.destroy());
-    components.forEach((c) {
-      if (c is Asteroid && offScreen(c)) {
-        c.destroyed = true;
-      }
+    offscreen().forEach((c) {
+      c.destroyed = true;
     });
 
     // Collision detection...
@@ -108,6 +105,14 @@ class Game extends BaseGame {
 
     // Collision detection...
     // players.forEach((Player player) => this.hasCollidedWithMany(player, asteroids));
+  }
+
+  List<dynamic> asteroids() {
+    return components.where((c) => c is Asteroid).toList();
+  }
+
+  List<dynamic> offscreen() {
+    return asteroids().where((c) => offScreen(c)).toList();
   }
 
   void resize(Size size) {
