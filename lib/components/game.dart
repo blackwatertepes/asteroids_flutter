@@ -1,15 +1,15 @@
 import 'dart:math';
 import 'dart:ui';
 // import 'package:flutter/gestures.dart';
-// import 'package:flutter/material.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 // import 'package:flame/util.dart';
+import 'package:Asteroidio/components/asteroid.dart';
+import 'package:Asteroidio/components/debri.dart';
 import 'package:Asteroidio/components/player.dart';
 import 'package:Asteroidio/components/time.dart';
-import 'package:Asteroidio/components/asteroid.dart';
+// import 'package:flutter/semantics.dart';
 // import 'package:Asteroidio/systems/bullets.dart';
-// import 'package:Asteroidio/systems/debris.dart';
 // import 'package:Asteroidio/systems/explosions.dart';
 // import 'package:Asteroidio/systems/missles.dart';
 
@@ -32,6 +32,7 @@ class Game extends BaseGame {
   double sizeWidth;
   double sizeHeight;
   bool running;
+  Player player;
 
   Game() {
     initialize();
@@ -40,7 +41,6 @@ class Game extends BaseGame {
   void initialize() async {
     resize(await Flame.util.initialDimensions());
 
-    // debris =  new Debris(this, screenSize.width, screenSize.height);
     // bullets =  new Bullets(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     // explosions =  new Explosions(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
     // missles =  new Missles(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
@@ -90,29 +90,42 @@ class Game extends BaseGame {
       spawnRate += spawnGrowthRate;
     }
 
-    offscreen().forEach((c) {
+    offscreenAsteroids().forEach((c) {
+      c.destroyed = true;
+    });
+
+    offscreenDebris().forEach((c) {
       c.destroyed = true;
     });
 
     // Collision detection...
-    // asteroids.forEach((Asteroid asteroid) => this.hasCollidedWithMany(asteroid, asteroids));
+    asteroids().forEach((asteroid) => hasCollidedWithMany(asteroid, asteroids()));
+
+    // Collision detection...
+    if (player != null) {
+      hasCollidedWithManyPlayer(player, asteroids());
+    }
 
   //   bullets.update(t);
-    // debris.update(t);
   //   explosions.update(t);
   //   missles.update(t);
   //   players.update(t);
-
-    // Collision detection...
-    // players.forEach((Player player) => this.hasCollidedWithMany(player, asteroids));
   }
 
   List<dynamic> asteroids() {
     return components.where((c) => c is Asteroid).toList();
   }
 
-  List<dynamic> offscreen() {
-    return asteroids().where((c) => offScreen(c)).toList();
+  List<dynamic> offscreenAsteroids() {
+    return asteroids().where((c) => offScreenAsteroid(c)).toList();
+  }
+
+  List<dynamic> debris() {
+    return components.where((c) => c is Debri).toList();
+  }
+  
+  List<dynamic> offscreenDebris() {
+    return debris().where((c) => offScreenDebri(c)).toList();
   }
 
   void resize(Size size) {
@@ -149,9 +162,10 @@ class Game extends BaseGame {
   // }
 
   void addPlayer() {
-    add(new Player()
+    player = new Player()
       ..x = screenSize.width / 2
-      ..y = screenSize.height / 2);
+      ..y = screenSize.height / 2;
+    add(player);
   }
 
   // bool fireAt(double dx, double dy) {
@@ -168,44 +182,60 @@ class Game extends BaseGame {
   //   }
   // }
 
-  // void hasCollidedWithMany(Player player, List<Asteroid> asteroids) {
-  //   asteroids.forEach((Asteroid asteroid) => this.hasCollided(player, asteroid));
-  // }
+  void hasCollidedWithManyPlayer(Player player, List<dynamic> asteroids) {
+    asteroids.forEach((asteroid) => this.hasCollidedPlayer(player, asteroid));
+  }
 
-  // void hasCollided(Player player, Asteroid asteroid) {
-  //   if (player.x - asteroid.x < player.size + asteroid.size && player.y - asteroid.y < player.size + asteroid.size) {
-  //     double distBetween = sqrt(pow(player.x - asteroid.x, 2) + pow(player.y - asteroid.y, 2));
-  //     if (distBetween < player.size + asteroid.size) {
-  //       player.destroy();
-  //       endGame();
-  //     }
-  //   }
-  // }
+  void hasCollidedPlayer(Player player, Asteroid asteroid) {
+    if (player.x - asteroid.x < player.size + asteroid.size && player.y - asteroid.y < player.size + asteroid.size) {
+      double distBetween = sqrt(pow(player.x - asteroid.x, 2) + pow(player.y - asteroid.y, 2));
+      if (distBetween < player.size + asteroid.size) {
+        player.destroy();
+        endGame();
+      }
+    }
+  }
 
-  // void hasCollidedWithMany(Asteroid objectA, List<Asteroid> objects) {
-  //   objects.forEach((Asteroid objectB) => this.hasCollided(objectA, objectB));
-  // }
+  void hasCollidedWithMany(Asteroid objectA, List<dynamic> objects) {
+    objects.forEach((objectB) => this.hasCollided(objectA, objectB));
+  }
 
-  // void hasCollided(Asteroid objectA, Asteroid objectB) {
-  //   double distToHit = objectA.size + objectB.size;
-  //   if (objectA.x - objectB.x < distToHit && objectA.y - objectB.y < distToHit) {
-  //     double distBetween = sqrt(pow(objectA.x - objectB.x, 2) + pow(objectA.y - objectB.y, 2));
-  //     if (objectA != objectB && distBetween < distToHit) {
-  //       objectA.hit(0.5);
-  //       objectB.hit(0.5);
+  void hasCollided(Asteroid objectA, Asteroid objectB) {
+    double distToHit = objectA.size + objectB.size;
+    if (objectA.x - objectB.x < distToHit && objectA.y - objectB.y < distToHit) {
+      double distBetween = sqrt(pow(objectA.x - objectB.x, 2) + pow(objectA.y - objectB.y, 2));
+      if (objectA != objectB && distBetween < distToHit) {
+        if (objectA.hit(0.5)) {
+          createDebris(objectA);
+          objectA.destroyed = true;
+        }
+        if (objectB.hit(0.5)) {
+          createDebris(objectB);
+          objectB.destroyed = true;
+        }
 
-  //       // Reflection/Bounce...
-  //       double angle = atan2(objectA.y - objectB.y, objectA.x - objectB.x);
-  //       double normal = angle + pi;
-  //       if (!objectA.destroyed) {
-  //         objectB.direction = reflection(objectB.direction, normal);
-  //       }
-  //       if (!objectB.destroyed) {
-  //         objectA.direction = reflection(objectA.direction, normal);
-  //       }
-  //     }
-  //   }
-  // }
+        // Reflection/Bounce...
+        double angle = atan2(objectA.y - objectB.y, objectA.x - objectB.x);
+        double normal = angle + pi;
+        if (!objectA.destroyed) {
+          objectB.direction = reflection(objectB.direction, normal);
+        }
+        if (!objectB.destroyed) {
+          objectA.direction = reflection(objectA.direction, normal);
+        }
+      }
+    }
+  }
+
+  double reflection(direction, normal) {
+    double dx = cos(direction);
+    double dy = sin(direction);
+    double nx = cos(normal);
+    double ny = sin(normal);
+    double rx = dx - 2 * dx * pow(nx, 2);
+    double ry = dy - 2 * dy * pow(ny, 2);
+    return atan2(ry, rx);
+  }
 
   void start() {
     running = true;
@@ -216,21 +246,37 @@ class Game extends BaseGame {
     spawnRate = minSpawnRate;
   }
 
-  // double reflection(direction, normal) {
-  //   double dx = cos(direction);
-  //   double dy = sin(direction);
-  //   double nx = cos(normal);
-  //   double ny = sin(normal);
-  //   double rx = dx - 2 * dx * pow(nx, 2);
-  //   double ry = dy - 2 * dy * pow(ny, 2);
-  //   return atan2(ry, rx);
-  // }
-
-  bool offScreen(Asteroid a) {
+  bool offScreenAsteroid(Asteroid a) {
     double distFromCenter = sqrt(pow(screenSize.width / 2 - a.x, 2) + pow(screenSize.height / 2 - a.y, 2));
     if (distFromCenter > boundRadius) {
       return true;
     }
     return false;
+  }
+
+  bool offScreenDebri(Debri d) {
+    double margin = 10;
+    if (d.x < 0 - margin || d.y < 0 - margin || d.x > screenSize.width + margin || d.y > screenSize.height + margin) {
+      return true;
+    }
+    return false;
+  }
+
+  void createDebris(Asteroid asteroid) {
+    double amount = asteroid.numVertices / 2;
+    for (int vert = 0; vert < amount; vert++) {
+      double theta = pi * 2 / amount * vert;
+      double x = asteroid.x + asteroid.size * cos(theta);
+      double y = asteroid.y + asteroid.size * sin(theta);
+      double length = asteroid.size * 2 * pi / amount;
+      double angle = theta + pi / 2;
+      double direction = theta;
+
+      Debri debri = Debri(length, direction)
+        ..x = x
+        ..y = y
+        ..angle = angle;
+      add(debri);
+    }
   }
 }

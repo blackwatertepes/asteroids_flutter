@@ -5,23 +5,19 @@ import 'package:flame/components/component.dart';
 class Debri extends PositionComponent {
   Rect boxRect;
   Paint boxPaint;
-  double x;
-  double y;
   double length;
   double direction;
-  double angle;
   double rotationSpeed;
   double maxRotationSpeed;
   double speed;
   double minSpeed;
   double maxSpeed;
+  bool destroyed;
 
-  Debri(double initX, double initY, double initLength, double initAngle, double initDirection) {
-    x = initX;
-    y = initY;
+  Debri(double initLength, double initDirection) {
     length = initLength;
-    angle = initAngle;
     direction = initDirection;
+    destroyed = false;
 
     maxRotationSpeed = 0.04;
     minSpeed = 0.4;
@@ -34,25 +30,31 @@ class Debri extends PositionComponent {
   }
 
   @override
-  void render(Canvas canvas) {
-    Path path = Path()
-      ..moveTo(x - length / 2 * cos(angle), y - length / 2 * sin(angle))
-      ..lineTo(x + length / 2 * cos(angle), y + length / 2 * sin(angle));
-
-    boxPaint = Paint();
-    boxPaint.color = Color(0xffffffff);
-    boxPaint.style = PaintingStyle.stroke;
-    boxPaint.strokeWidth = 2;
-
-    canvas.drawPath(path, boxPaint);
-  }
-
-  @override
   void update(double t) {
     super.update(t);
 
     x += cos(direction) * speed;
     y += sin(direction) * speed;
     angle += rotationSpeed;
+  }
+
+  @override
+  void render(Canvas c) {
+    prepareCanvas(c);
+
+    Path path = Path()
+      ..moveTo(length / 2 * cos(angle), length / 2 * sin(angle))
+      ..lineTo(length / 2 * cos(angle), length / 2 * sin(angle));
+
+    boxPaint = Paint();
+    boxPaint.color = Color(0xffffffff);
+    boxPaint.style = PaintingStyle.stroke;
+    boxPaint.strokeWidth = 2;
+
+    c.drawPath(path, boxPaint);
+  }
+
+  bool destroy() {
+    return destroyed;
   }
 }

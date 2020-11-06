@@ -20,12 +20,9 @@ class Asteroid extends PositionComponent {
   double numVertices;
   double noiseMulti;
   bool destroyed;
-  // Function createDebris;
 
-  // Asteroid(double initX, double initY, double initDirection, Function _createDebris) {
   Asteroid(double initDirection) {
     direction = initDirection;
-    // createDebris = _createDebris;
 
     minSize = 10;
     maxSize = 20;
@@ -90,14 +87,12 @@ class Asteroid extends PositionComponent {
   bool hit(double strength) {
     size -= strength * 4;
     if (size < minSize) {
-      // destroy();
       return true;
     }
     return false;
   }
 
   bool destroy() {
-    // this.createDebris(this);
     return destroyed;
   }
 }
