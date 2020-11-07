@@ -20,8 +20,8 @@ class Bullet extends PositionComponent {
   @override
   void render(Canvas c) {
     Path path = Path()
-      ..moveTo(0, 0)
-      ..lineTo(cos(direction) * size, sin(direction) * size);
+      ..moveTo(x, y)
+      ..lineTo(x + cos(direction) * size, y + sin(direction) * size);
 
     boxPaint = Paint();
     boxPaint.color = Color(0xffffffff);

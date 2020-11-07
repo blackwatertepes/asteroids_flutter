@@ -92,20 +92,24 @@ class Game extends BaseGame with TapDetector {
       c.destroyed = true;
     });
 
-    // Collision detection...
-    asteroids().forEach((asteroid) => hasCollidedWithMany(asteroid, asteroids()));
-
-    // Collision detection...
-    if (player != null) {
-      hasCollidedWithManyPlayer(player, asteroids());
-    }
-
     offscreenBullets().forEach((c) {
       c.destroyed = true;
     });
 
-    // explosions().forEach((Explosion explosion) => this.hasCollidedWithMany(explosion, asteroids));
-    // missles().forEach((Missle missle) => this.hasCollidedWithMany(missle, asteroids));
+    offscreenMissles().forEach((c) {
+      c.destroyed = true;
+    });
+
+    // Collision detection...
+    asteroids().forEach((asteroid) => hasCollidedWithMany(asteroid, asteroids()));
+
+    if (player != null) {
+      hasCollidedWithManyPlayer(player, asteroids());
+    }
+
+    bullets().forEach((bullet) => hasCollidedWithManyBullet(bullet, asteroids()));
+    explosions().forEach((explosion) => hasCollidedWithManyExplosion(explosion, asteroids()));
+    missles().forEach((missle) => hasCollidedWithManyMissle(missle, asteroids()));
   }
 
   List<dynamic> asteroids() {
@@ -132,6 +136,18 @@ class Game extends BaseGame with TapDetector {
     return bullets().where((c) => offScreen(c)).toList();
   }
 
+  List<dynamic> explosions() {
+    return components.where((c) => c is Explosion).toList();
+  }
+
+  List<dynamic> missles() {
+    return components.where((c) => c is Missle).toList();
+  }
+  
+  List<dynamic> offscreenMissles() {
+    return missles().where((c) => offScreen(c)).toList();
+  }
+
   void resize(Size size) {
     super.resize(size);
 
@@ -140,6 +156,7 @@ class Game extends BaseGame with TapDetector {
 
   void startGame() {
     addPlayer();
+    addProjectile = addBullet;
     time.reset();
     inProgress = true;
     start();
@@ -193,7 +210,7 @@ class Game extends BaseGame with TapDetector {
     if (player.x - asteroid.x < player.size + asteroid.size && player.y - asteroid.y < player.size + asteroid.size) {
       double distBetween = sqrt(pow(player.x - asteroid.x, 2) + pow(player.y - asteroid.y, 2));
       if (distBetween < player.size + asteroid.size) {
-        player.destroy();
+        player.destroyed = true;
         endGame();
       }
     }
@@ -238,7 +255,7 @@ class Game extends BaseGame with TapDetector {
     if (bullet.x - asteroid.x < asteroid.size && bullet.y - asteroid.y < asteroid.size) {
       double distBetween = sqrt(pow(bullet.x - asteroid.x, 2) + pow(bullet.y - asteroid.y, 2));
       if (distBetween < asteroid.size) {
-        bullet.destroy();
+        bullet.destroyed = true;
         asteroid.hit(0.75);
       }
     }
@@ -286,12 +303,13 @@ class Game extends BaseGame with TapDetector {
     if (missle.x - asteroid.x < asteroid.size && missle.y - asteroid.y < asteroid.size) {
       double distBetween = sqrt(pow(missle.x - asteroid.x, 2) + pow(missle.y - asteroid.y, 2));
       if (distBetween < asteroid.size) {
-        missle.destroy();
+        missle.destroyed = true;
       }
     }
   }
 
   void addBullet(double dx, double dy) {
+    print("addBullet(): $dx, $dy");
     double direction = atan2(dy - player.y, dx - player.x);
     Bullet bullet = new Bullet(direction)
       ..x = player.x
