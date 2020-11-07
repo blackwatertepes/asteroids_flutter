@@ -1,19 +1,20 @@
 import 'dart:math';
 import 'dart:ui';
-// import 'package:flutter/gestures.dart';
+import 'package:flutter/gestures.dart';
+// import 'package:flutter/semantics.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 // import 'package:flame/util.dart';
+import 'package:flame/gestures.dart';
 import 'package:Asteroidio/components/asteroid.dart';
+import 'package:Asteroidio/components/bullet.dart';
 import 'package:Asteroidio/components/debri.dart';
 import 'package:Asteroidio/components/player.dart';
 import 'package:Asteroidio/components/time.dart';
-// import 'package:flutter/semantics.dart';
-// import 'package:Asteroidio/systems/bullets.dart';
 // import 'package:Asteroidio/systems/explosions.dart';
 // import 'package:Asteroidio/systems/missles.dart';
 
-class Game extends BaseGame {
+class Game extends BaseGame with TapDetector {
   Time time;
   Size screenSize;
   // TapGestureRecognizer tapper;
@@ -106,7 +107,10 @@ class Game extends BaseGame {
       hasCollidedWithManyPlayer(player, asteroids());
     }
 
-  //   bullets.update(t);
+    offscreenBullets().forEach((c) {
+      c.destroyed = true;
+    });
+
   //   explosions.update(t);
   //   missles.update(t);
   //   players.update(t);
@@ -125,7 +129,15 @@ class Game extends BaseGame {
   }
   
   List<dynamic> offscreenDebris() {
-    return debris().where((c) => offScreenDebri(c)).toList();
+    return debris().where((c) => offScreen(c)).toList();
+  }
+
+  List<dynamic> bullets() {
+    return components.where((c) => c is Bullet).toList();
+  }
+  
+  List<dynamic> offscreenBullets() {
+    return bullets().where((c) => offScreen(c)).toList();
   }
 
   void resize(Size size) {
@@ -148,18 +160,18 @@ class Game extends BaseGame {
     gameEndedAt = DateTime.now().millisecondsSinceEpoch;
   }
 
-  // void onTapDown(TapDownDetails d) {
-  //   if (inProgress) {
-  //     double distFromCenter = sqrt(pow(screenSize.width / 2 - d.globalPosition.dx, 2) + pow(screenSize.height / 2 - d.globalPosition.dy, 2));
-  //     if (distFromCenter <= switchGunRadius) {
-  //       players.switchGun();
-  //     } else {
-  //       players.fireAt(d.globalPosition.dx, d.globalPosition.dy);
-  //     }
-  //   } else if (gameEndedAt < DateTime.now().millisecondsSinceEpoch - restartDelay) {
-  //     startGame();
-  //   }
-  // }
+  void onTapDown(TapDownDetails d) {
+    if (inProgress) {
+      double distFromCenter = sqrt(pow(screenSize.width / 2 - d.globalPosition.dx, 2) + pow(screenSize.height / 2 - d.globalPosition.dy, 2));
+      if (distFromCenter <= switchGunRadius) {
+        switchGun();
+      } else {
+        fireAt(d.globalPosition.dx, d.globalPosition.dy);
+      }
+    } else if (gameEndedAt < DateTime.now().millisecondsSinceEpoch - restartDelay) {
+      startGame();
+    }
+  }
 
   void addPlayer() {
     player = new Player()
@@ -168,19 +180,18 @@ class Game extends BaseGame {
     add(player);
   }
 
-  // bool fireAt(double dx, double dy) {
-  //   players.forEach((Player player) => player.fireAt(dx, dy));
-  //   addProjectile(dx, dy);
-  //   return players.length > 0;
-  // }
+  void fireAt(double dx, double dy) {
+    player.fireAt(dx, dy);
+    addBullet(dx, dy);
+  }
 
-  // void switchGun() {
-  //   if (addProjectile == addBullet) {
-  //     addProjectile = addMissle;
-  //   } else {
-  //     addProjectile = addBullet;
-  //   }
-  // }
+  void switchGun() {
+    // if (addProjectile == addBullet) {
+    //   addProjectile = addMissle;
+    // } else {
+    //   addProjectile = addBullet;
+    // }
+  }
 
   void hasCollidedWithManyPlayer(Player player, List<dynamic> asteroids) {
     asteroids.forEach((asteroid) => this.hasCollidedPlayer(player, asteroid));
@@ -227,6 +238,28 @@ class Game extends BaseGame {
     }
   }
 
+  void hasCollidedWithManyBullet(Bullet bullet, List<dynamic> asteroids) {
+    asteroids.forEach((asteroid) => hasCollidedBullet(bullet, asteroid));
+  }
+
+  void hasCollidedBullet(Bullet bullet, Asteroid asteroid) {
+    if (bullet.x - asteroid.x < asteroid.size && bullet.y - asteroid.y < asteroid.size) {
+      double distBetween = sqrt(pow(bullet.x - asteroid.x, 2) + pow(bullet.y - asteroid.y, 2));
+      if (distBetween < asteroid.size) {
+        bullet.destroy();
+        asteroid.hit(0.75);
+      }
+    }
+  }
+
+  void addBullet(double dx, double dy) {
+    double direction = atan2(dy - player.y, dx - player.x);
+    Bullet bullet = new Bullet(direction)
+      ..x = player.x
+      ..y = player.y;
+    add(bullet);
+  }
+
   double reflection(direction, normal) {
     double dx = cos(direction);
     double dy = sin(direction);
@@ -254,9 +287,9 @@ class Game extends BaseGame {
     return false;
   }
 
-  bool offScreenDebri(Debri d) {
+  bool offScreen(c) {
     double margin = 10;
-    if (d.x < 0 - margin || d.y < 0 - margin || d.x > screenSize.width + margin || d.y > screenSize.height + margin) {
+    if (c.x < 0 - margin || c.y < 0 - margin || c.x > screenSize.width + margin || c.y > screenSize.height + margin) {
       return true;
     }
     return false;

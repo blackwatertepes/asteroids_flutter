@@ -5,16 +5,12 @@ import 'package:flame/components/component.dart';
 class Bullet extends PositionComponent {
   Rect boxRect;
   Paint boxPaint;
-  double x;
-  double y;
   double direction;
   double size;
   double speed;
   bool destroyed;
 
-  Bullet(double initX, double initY, double initDirection) {
-    x = initX;
-    y = initY;
+  Bullet(double initDirection) {
     direction = initDirection;
     speed = 8;
     size = speed;
@@ -44,7 +40,6 @@ class Bullet extends PositionComponent {
   }
 
   bool destroy() {
-    destroyed = true;
     return destroyed;
   }
 }
