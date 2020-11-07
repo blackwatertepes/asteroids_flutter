@@ -43,7 +43,7 @@ class Debri extends PositionComponent {
     prepareCanvas(c);
 
     Path path = Path()
-      ..moveTo(length / 2 * cos(angle), length / 2 * sin(angle))
+      ..moveTo(-length / 2 * cos(angle), -length / 2 * sin(angle))
       ..lineTo(length / 2 * cos(angle), length / 2 * sin(angle));
 
     boxPaint = Paint();

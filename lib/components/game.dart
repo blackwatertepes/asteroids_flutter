@@ -256,7 +256,10 @@ class Game extends BaseGame with TapDetector {
       double distBetween = sqrt(pow(bullet.x - asteroid.x, 2) + pow(bullet.y - asteroid.y, 2));
       if (distBetween < asteroid.size) {
         bullet.destroyed = true;
-        asteroid.hit(0.75);
+        if (asteroid.hit(0.75)) {
+          createDebris(asteroid);
+          asteroid.destroyed = true;
+        }
       }
     }
   }
@@ -309,7 +312,6 @@ class Game extends BaseGame with TapDetector {
   }
 
   void addBullet(double dx, double dy) {
-    print("addBullet(): $dx, $dy");
     double direction = atan2(dy - player.y, dx - player.x);
     Bullet bullet = new Bullet(direction)
       ..x = player.x
