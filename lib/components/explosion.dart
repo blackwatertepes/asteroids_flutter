@@ -4,23 +4,30 @@ import 'package:flame/components/component.dart';
 
 class Explosion extends PositionComponent {
   Paint boxPaint;
-  double x;
-  double y;
   double blastRadius;
   double maxBlastRadius;
   double blastSpeed;
 
-  Explosion(double init_x, double init_y, double init_blast_radius) {
-    x = init_x;
-    y = init_y;
-    maxBlastRadius = init_blast_radius;
+  Explosion(double _blastRadius) {
+    maxBlastRadius = _blastRadius;
 
     blastRadius = 0;
     blastSpeed = 0.2;
   }
 
   @override
-  void render(Canvas canvas) {
+  void update(double t) {
+    super.update(t);
+
+    if (blastRadius < maxBlastRadius) {
+      blastRadius += blastSpeed;
+    }
+  }
+
+  @override
+  void render(Canvas c) {
+    prepareCanvas(c);
+
     boxPaint = Paint();
     boxPaint.color = Color(0xffffffff);
     boxPaint.style = PaintingStyle.stroke;
@@ -28,14 +35,7 @@ class Explosion extends PositionComponent {
 
     Random rand = Random();
 
-    canvas.drawCircle(Offset(x, y), rand.nextDouble() * blastRadius, boxPaint);
-  }
-
-  @override
-  void update(double t) {
-    if (blastRadius < maxBlastRadius) {
-      blastRadius += blastSpeed;
-    }
+    c.drawCircle(Offset(0, 0), rand.nextDouble() * blastRadius, boxPaint);
   }
 
   bool done() {

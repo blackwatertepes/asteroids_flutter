@@ -9,10 +9,10 @@ import 'package:flame/gestures.dart';
 import 'package:Asteroidio/components/asteroid.dart';
 import 'package:Asteroidio/components/bullet.dart';
 import 'package:Asteroidio/components/debri.dart';
+import 'package:Asteroidio/components/explosion.dart';
+import 'package:Asteroidio/components/missle.dart';
 import 'package:Asteroidio/components/player.dart';
 import 'package:Asteroidio/components/time.dart';
-// import 'package:Asteroidio/systems/explosions.dart';
-// import 'package:Asteroidio/systems/missles.dart';
 
 class Game extends BaseGame with TapDetector {
   Time time;
@@ -34,6 +34,7 @@ class Game extends BaseGame with TapDetector {
   double sizeHeight;
   bool running;
   Player player;
+  Function addProjectile;
 
   Game() {
     initialize();
@@ -42,17 +43,9 @@ class Game extends BaseGame with TapDetector {
   void initialize() async {
     resize(await Flame.util.initialDimensions());
 
-    // bullets =  new Bullets(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
-    // explosions =  new Explosions(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids);
-    // missles =  new Missles(this, screenSize.width / 2, screenSize.height / 2, asteroids.asteroids, explosions.addExplosion);
     time = new Time(screenSize.width, screenSize.height);
-    // tapper = TapGestureRecognizer();
-    // flameUtil = Util();
 
     add(time);
-
-    // tapper.onTapDown = onTapDown;
-    // flameUtil.addGestureRecognizer(tapper);
 
     inProgress = false;
     switchGunRadius = 20;
@@ -111,9 +104,8 @@ class Game extends BaseGame with TapDetector {
       c.destroyed = true;
     });
 
-  //   explosions.update(t);
-  //   missles.update(t);
-  //   players.update(t);
+    // explosions().forEach((Explosion explosion) => this.hasCollidedWithMany(explosion, asteroids));
+    // missles().forEach((Missle missle) => this.hasCollidedWithMany(missle, asteroids));
   }
 
   List<dynamic> asteroids() {
@@ -182,15 +174,15 @@ class Game extends BaseGame with TapDetector {
 
   void fireAt(double dx, double dy) {
     player.fireAt(dx, dy);
-    addBullet(dx, dy);
+    addProjectile(dx, dy);
   }
 
   void switchGun() {
-    // if (addProjectile == addBullet) {
-    //   addProjectile = addMissle;
-    // } else {
-    //   addProjectile = addBullet;
-    // }
+    if (addProjectile == addBullet) {
+      addProjectile = addMissle;
+    } else {
+      addProjectile = addBullet;
+    }
   }
 
   void hasCollidedWithManyPlayer(Player player, List<dynamic> asteroids) {
@@ -248,6 +240,53 @@ class Game extends BaseGame with TapDetector {
       if (distBetween < asteroid.size) {
         bullet.destroy();
         asteroid.hit(0.75);
+      }
+    }
+  }
+
+  void addExplosion(double dx, double dy, double blastRadius) {
+    Explosion explosion = new Explosion(blastRadius);
+    add(explosion);
+  }
+
+  void hasCollidedWithManyExplosion(Explosion explosion, List<dynamic> asteroids) {
+    asteroids.forEach((asteroid) => hasCollidedExplosion(explosion, asteroid));
+  }
+
+  void hasCollidedExplosion(Explosion explosion, Asteroid asteroid) {
+    if (explosion.x - asteroid.x < explosion.blastRadius + asteroid.size && explosion.y - asteroid.y < explosion.blastRadius + asteroid.size) {
+      double distBetween = sqrt(pow(explosion.x - asteroid.x, 2) + pow(explosion.y - asteroid.y, 2));
+      if (distBetween < explosion.blastRadius + asteroid.size) {
+        asteroid.hit(1);
+      }
+    }
+  }
+
+  void addMissle(double dx, double dy) {
+    double direction = atan2(dy - player.y, dx - player.x);
+    double distance = sqrt(pow(dx - player.x, 2) + pow(dy - player.y, 2)); // * 2
+    Missle missle = new Missle(direction, distance, 20);
+    add(missle);
+  }
+
+  bool exploded(Missle object) {
+    double distance = sqrt(pow(object.x - player.x, 2) + pow(object.y - player.y, 2));
+    if (distance >= object.dist) {
+      addExplosion(object.x, object.y, object.blastRadius);
+      return true;
+    }
+    return false;
+  }
+
+  void hasCollidedWithManyMissle(Missle missle, List<dynamic> asteroids) {
+    asteroids.forEach((asteroid) => hasCollidedMissle(missle, asteroid));
+  }
+
+  void hasCollidedMissle(Missle missle, Asteroid asteroid) {
+    if (missle.x - asteroid.x < asteroid.size && missle.y - asteroid.y < asteroid.size) {
+      double distBetween = sqrt(pow(missle.x - asteroid.x, 2) + pow(missle.y - asteroid.y, 2));
+      if (distBetween < asteroid.size) {
+        missle.destroy();
       }
     }
   }

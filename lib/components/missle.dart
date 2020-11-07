@@ -5,8 +5,6 @@ import 'package:flame/components/component.dart';
 class Missle extends PositionComponent {
   Rect boxRect;
   Paint boxPaint;
-  double x;
-  double y;
   double direction;
   double length;
   double width;
@@ -15,14 +13,10 @@ class Missle extends PositionComponent {
   double blastRadius;
   bool destroyed;
 
-  Missle(double init_x, double init_y, double init_direction, double init_distance, double init_blast_radius) {
-    x = init_x;
-    y = init_y;
-    direction = init_direction;
-    dist = init_distance;
-    blastRadius = init_blast_radius;
-
-    Random rand = Random();
+  Missle(double _direction, double _distance, double _blastRadius) {
+    direction = _direction;
+    dist = _distance;
+    blastRadius = _blastRadius;
 
     length = 10;
     width =  0.1;
@@ -31,29 +25,32 @@ class Missle extends PositionComponent {
   }
 
   @override
-  void render(Canvas canvas) {
+  void update(double t) {
+    super.update(t);
+
+    x += cos(direction) * speed;
+    y += sin(direction) * speed;
+  }
+
+  @override
+  void render(Canvas c) {
+    prepareCanvas(c);
+
     Path path = Path()
-      ..moveTo(x, y)
-      ..lineTo(x - cos(direction + width) * length, y - sin(direction + width) * length)
-      ..lineTo(x - cos(direction - width) * length, y - sin(direction - width) * length)
-      ..lineTo(x, y);
+      ..moveTo(0, 0)
+      ..lineTo(cos(direction + width) * length, sin(direction + width) * length)
+      ..lineTo(cos(direction - width) * length, sin(direction - width) * length)
+      ..lineTo(0, 0);
 
     boxPaint = Paint();
     boxPaint.color = Color(0xffffffff);
     boxPaint.style = PaintingStyle.stroke;
     boxPaint.strokeWidth = 2;
 
-    canvas.drawPath(path, boxPaint);
-  }
-
-  @override
-  void update(double t) {
-    x += cos(direction) * speed;
-    y += sin(direction) * speed;
+    c.drawPath(path, boxPaint);
   }
 
   bool destroy() {
-    destroyed = true;
     return destroyed;
   }
 }

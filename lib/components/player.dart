@@ -15,6 +15,11 @@ class Player extends PositionComponent {
   }
 
   @override
+  void update(double t) {
+    super.update(t);
+  }
+
+  @override
   void render(Canvas c) {
     prepareCanvas(c);
 
@@ -32,11 +37,6 @@ class Player extends PositionComponent {
     boxPaint.strokeWidth = 2;
 
     c.drawPath(path, boxPaint);
-  }
-
-  @override
-  void update(double t) {
-    super.update(t);
   }
 
   void fireAt(double atX, double atY) {
